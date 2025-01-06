@@ -1,0 +1,25 @@
+{
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "auto"
+  },
+  "rubyLsp.formatter": "rubocop",
+  "files.watcherExclude": {
+    "**/tmp/**": true,
+    "**/log/**": true,
+    "**/node_modules/**": true,
+    "**/public/packs/**": true
+  },
+  "search.exclude": {
+    "**/tmp/**": true,
+    "**/log/**": true,
+    "**/node_modules/**": true,
+    "**/public/packs/**": true
+  },
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-c>": false,
+    "<C-v>": false,
+    "<C-p>": false
+  }
+}
