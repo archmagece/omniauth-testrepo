@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/sb/omniauth/kakao/version"
+require_relative "lib/omniauth/kakao/version"
 
 Gem::Specification.new do |spec|
   spec.name = "sb-omniauth-kakao"
-  spec.version = Sb::Omniauth::Kakao::VERSION
+  spec.version = Omniauth::Kakao::VERSION
   spec.authors = ["archmagece"]
   spec.email = ["archmagece@users.noreply.github.com"]
 
