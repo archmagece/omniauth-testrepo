@@ -10,6 +10,7 @@
     "**/public/packs/**": true
   },
   "search.exclude": {
+    "**/.git/**": true,
     "**/tmp/**": true,
     "**/log/**": true,
     "**/node_modules/**": true,
