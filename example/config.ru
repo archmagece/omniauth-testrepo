@@ -8,8 +8,7 @@ require "rubygems"
 require "bundler"
 require "sinatra"
 require "omniauth"
-require "sb-omniauth-kakao"
-# require "../lib/omniauth/kakao"
+require "omniauth-kakao"
 
 # Do not use for production code.
 # This is only to make setup easier when running through the sample.
@@ -23,6 +22,7 @@ class App < Sinatra::Base
   configure do
     set :sessions, true
     set :inline_templates, true
+    # set :port, 3000
   end
 
   use Rack::Session::Cookie, secret: ENV.fetch("RACK_COOKIE_SECRET", nil)
@@ -30,9 +30,10 @@ class App < Sinatra::Base
   use OmniAuth::Builder do
     # For additional provider examples please look at 'omni_auth.rb'
     # The key provider_ignores_state is only for AJAX flows. It is not recommended for normal logins.
+    # provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil), access_type: "offline", prompt: "consent", provider_ignores_state: true, scope: "email,profile", :strategy_class => OmniAuth::Strategies::KakaoOauth2
     provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil), access_type: "offline", prompt: "consent", provider_ignores_state: true, scope: "email,profile"
   end
-
+  
   get "/" do
     <<-HTML
     <!DOCTYPE html>
@@ -128,4 +129,4 @@ class App < Sinatra::Base
   end
 end
 
-run App.new
+run App.new 

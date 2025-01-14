@@ -7,7 +7,7 @@ require 'uri'
 
 module OmniAuth
   module Strategies
-    class KakaoOauth2 < OmniAuth::Strategies::OAuth2
+    class Kakao < OmniAuth::Strategies::OAuth2
       ALLOWED_ISSUERS = ['kauth.kakao.com', 'https://kauth.kakao.com'].freeze
       # BASE_SCOPE_URL = 'https://kauth.kakao.com/oauth/authorize/'
       BASE_SCOPES = %w[profile account_email openid].freeze

@@ -6,16 +6,16 @@ source "https://rubygems.org"
 gemspec
 
 
-group :development, :test do
-  gem 'guard'
-  gem 'guard-rspec'
-  gem 'guard-bundler'
-  gem 'rb-fsevent'
-  gem 'growl'
-  gem 'rake'
+# group :development, :test do
+#   gem 'guard'
+#   gem 'guard-rspec'
+#   gem 'guard-bundler'
+#   gem 'rb-fsevent'
+#   gem 'growl'
+#   gem 'rake'
 
-  gem "rspec", "~> 3.0"
-  gem "rspec-its", "~> 1.0"
+#   gem "rspec", "~> 3.0"
+#   gem "rspec-its", "~> 1.0"
 
-  gem "rubocop", "~> 1.21"
-end
+#   gem "rubocop", "~> 1.21"
+# end

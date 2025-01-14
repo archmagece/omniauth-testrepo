@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gem "dotenv"
 
-gem "omniauth"
+# gem "omniauth"
 # gem "omniauth-kakao", git: "https://github.com/shaynekang/omniauth-kakao.git"
 gem "sb-omniauth-kakao", git: "https://github.com/ScriptonBasestar/sb-omniauth-kakao.git"
 
@@ -12,4 +12,8 @@ gem "sinatra"
 
 gem "webrick"
 
+gem "rackup"
+# gem "rack"
+
 gem "rubocop"
+
