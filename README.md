@@ -3,7 +3,7 @@
 ## Installation
 
 ```ruby
-gem 'sb-omniauth-kakao'
+gem 'sb-omniauth-kakao', git: 'https://github.com/ScriptonBasestar/sb-omniauth-kakao'
 ```
 
 ## Kakao app

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["archmagece"]
   spec.email = ["archmagece@users.noreply.github.com"]
 
-  spec.summary = "oauth strategy for OmniAuth 1.x"
-  spec.description = "oauth strategy for OmniAuth 1.x"
+  spec.summary = "oauth strategy for OmniAuth 2.x"
+  spec.description = "oauth strategy for OmniAuth 2.x"
   spec.homepage = "https://github.com/scriptonbasestar/sb-omniauth-kakao"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"
@@ -36,11 +36,12 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
-  spec.add_runtime_dependency 'jwt', '>= 2.10'
-  spec.add_runtime_dependency 'oauth2', '~> 2.0'
-  spec.add_runtime_dependency 'omniauth', '~> 2.1'
-  spec.add_runtime_dependency 'omniauth-oauth2', '~> 1.8'
+  spec.add_dependency "jwt", ">= 2.10"
+  spec.add_dependency "oauth2", "~> 2.0"
+  spec.add_dependency "omniauth", "~> 2.1"
+  spec.add_dependency "omniauth-oauth2", "~> 1.8"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end
