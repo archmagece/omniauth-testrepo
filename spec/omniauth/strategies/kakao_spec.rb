@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'json'
 require 'stringio'
 
-RSpec.describe OmniAuth::Strategies::KakaoOauth2 do
+RSpec.describe OmniAuth::Strategies::Kakao do
   let(:access_token) { double('AccessToken') }
   let(:parsed_response) { double('ParsedResponse') }
   let(:response) { double('Response', parsed: parsed_response) }
@@ -13,9 +13,9 @@ RSpec.describe OmniAuth::Strategies::KakaoOauth2 do
 
   let(:kakao_service) { OmniAuth::Strategies::KakaoOauth2.new({}) }
   let(:enterprise) do
-    OmniAuth::Strategies::KakaoOauth2.new(
-      'KAKAO_KEY',
-      'KAKAO_SECRET',
+    OmniAuth::Strategies::Kakao.new(
+      "kakao",
+      'KAKAO_CLIENT_KEY', 'KAKAO_CLIENT_SECRET',
       client_options: { site: enterprise_site },
       redirect_url: 'http://localhost:9292/callback_url'
     )
