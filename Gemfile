@@ -11,12 +11,6 @@ group :development, :test do
   gem 'guard-bundler'
   gem 'rb-fsevent'
   gem 'growl'
-  gem 'rake'
-
-  gem "rspec"
-  gem "rspec-its"
-
-  gem "rubocop"
 
   gem "dotenv"
   # gem "omniauth"

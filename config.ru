@@ -27,36 +27,20 @@ class App < Sinatra::Base
   configure do
     set :sessions, true
     set :inline_templates, true
-    # set :port, 3000
-
-    # set :logger, Logger.new(STDOUT)
-    # logger.level = Logger::DEBUG
-    enable :logging
-    STDOUT.sync = true
-    logger = Logger.new(STDOUT)
-    logger.level = Logger::DEBUG
-    set :logger, logger
   end
-
-  OmniAuth.config.logger = settings.logger
 
   use Rack::Session::Cookie, secret: ENV.fetch("RACK_COOKIE_SECRET", "a3f5e6d7c8b9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5")
 
   use OmniAuth::Builder do
-    # For additional provider examples please look at 'omni_auth.rb'
-    # The key provider_ignores_state is only for AJAX flows. It is not recommended for normal logins.
     # provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil), access_type: "offline", prompt: "consent", provider_ignores_state: true, scope: "account_email,profile", :strategy_class => OmniAuth::Strategies::KakaoOauth2
     provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil),
              scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile"),
              client_options: {
-               connection_build: proc {
-                 Faraday.new do |builder|
-                   builder.request :url_encoded
-                   # builder.response :logger, Logger.new(STDOUT) # 요청/응답 로깅
-                   builder.response :logger, settings.logger # Sinatra 로거 사용
-                   # builder.adapter Faraday.default_adapter
-                 end
-               }
+               connection_build: lambda do |builder|
+                 builder.request :url_encoded
+                 #  builder.response :logger, $logger
+                 #  builder.adapter Faraday.default_adapter
+               end
              }
     before_callback_phase do |_env|
       puts "before_callback_phase"
@@ -66,16 +50,15 @@ class App < Sinatra::Base
     puts "KAKAO_CLIENT_ID: #{ENV.fetch("KAKAO_CLIENT_ID", nil)}"
     puts "KAKAO_CLIENT_SECRET: #{ENV.fetch("KAKAO_CLIENT_SECRET", nil)}"
   end
-  OmniAuth.config.logger = Logger.new(STDOUT)
-  OmniAuth.config.logger.level = Logger::DEBUG
   OmniAuth.config.on_failure = proc do |env|
-    error = env['omniauth.error']
+    error = env["omniauth.error"]
     puts "OmniAuth error: #{error.inspect}"
     OmniAuth::FailureEndpoint.new(env).redirect_to_failure
   end
 
   get "/" do
     logger.info "========================================================"
+    logger.debug "========================================================"
     logger.info "route GET /"
     <<-HTML
     <!DOCTYPE html>
