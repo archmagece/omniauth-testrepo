@@ -31,6 +31,9 @@ module OmniAuth
              site: BASE_URL,
              authorize_url: AUTHORIZE_URL,
              token_url: AUTHORIZE_TOKEN_URL
+
+      option :authorize_options, [:scope]
+
       uid { raw_info['id'].to_s }
 
       info do
