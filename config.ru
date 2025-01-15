@@ -9,6 +9,8 @@ require "bundler"
 require "sinatra"
 require "omniauth"
 require "faraday"
+require "logger"
+
 # require "sb-omniauth-kakao"
 # require_relative "../lib/sb-omniauth-kakao.rb"
 require "./lib/sb-omniauth-kakao"
@@ -27,6 +29,20 @@ class App < Sinatra::Base
   configure do
     set :sessions, true
     set :inline_templates, true
+    # 로깅 설정
+    $logger = Logger.new(STDOUT)
+    $logger.level = Logger::DEBUG
+
+    # Sinatra 로깅 활성화
+    enable :logging
+    set :logger, $logger
+
+    # enable :sessions
+    # set :session_secret, ENV.fetch("RACK_COOKIE_SECRET", "a3f5e6d7c8b9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5")
+  end
+
+  before do
+    env["rack.logger"] = settings.logger
   end
 
   use Rack::Session::Cookie, secret: ENV.fetch("RACK_COOKIE_SECRET", "a3f5e6d7c8b9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5")
@@ -38,8 +54,8 @@ class App < Sinatra::Base
              client_options: {
                connection_build: lambda do |builder|
                  builder.request :url_encoded
-                 #  builder.response :logger, $logger
-                 #  builder.adapter Faraday.default_adapter
+                 builder.response :logger, $logger
+                 builder.adapter Faraday.default_adapter
                end
              }
     before_callback_phase do |_env|
@@ -180,4 +196,5 @@ class App < Sinatra::Base
   end
 end
 
+use Rack::CommonLogger, $logger
 run App.new
