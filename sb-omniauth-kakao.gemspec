@@ -41,6 +41,14 @@ Gem::Specification.new do |spec|
   spec.add_dependency "omniauth", "~> 2.1"
   # spec.add_dependency "omniauth-oauth2", "~> 1.8"
 
+  # oauth2
+  spec.add_dependency "faraday", [">= 0.17.3", "< 3.0"]
+  spec.add_dependency "jwt", [">= 1.0", "< 3.0"]
+  spec.add_dependency "multi_xml", "~> 0.5"
+  spec.add_dependency "rack", [">= 1.2", "< 4"]
+  spec.add_dependency "snaky_hash", "~> 2.0"
+  spec.add_dependency "version_gem", "~> 1.1"
+
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.13"
   spec.add_development_dependency "rspec-its", "~> 2.0"
