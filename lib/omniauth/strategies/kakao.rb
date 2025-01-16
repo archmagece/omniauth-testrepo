@@ -21,7 +21,8 @@ module OmniAuth
 
       # https://kapi.kakao.com/v2/user/me
       # USER_INFO_URL = 'v1/oidc/userinfo'
-      USER_INFO_URL = "/v2/user/me"
+      USER_INFO_URL = "https://kapi.kakao.com/v2/user/me"
+      # USER_INFO_URL = "kapi.kakao.com/v2/user/me"
 
       option :client_options,
              site: BASE_URL,
@@ -30,12 +31,15 @@ module OmniAuth
       uid { raw_info["id"].to_s }
 
       info do
-        {
-          name: "kakao",
-          username: raw_info["username"],
-          email: raw_info["email"],
-          image: raw_info["avatar_url"]
+        hash = {
+          name: raw_info["properties"]["nickname"],
+          username: raw_info["kakao_account"]["email"],
+          image: raw_info["properties"]["thumbnail_image"]
         }
+        if raw_info["kakao_account"]["has_email"] && raw_info["kakao_account"]["is_email_verified"] && raw_info["kakao_account"]["is_email_valid"]
+          hash[:email] = raw_info["kakao_account"]["email"]
+        end
+        raw_info
       end
 
       extra do
@@ -92,22 +96,23 @@ module OmniAuth
       #   options.token_params.merge(options_for("token")).merge(pkce_token_params).merge(client_id: options.client_id)
       # end
 
-      # def build_access_token
-      #   puts 'build_access_token >>>>>>>>>>'
-      #   verifier = request.params["code"]
-      #   puts verifier
-      #   # token = client.auth_code.get_token(verifier, { redirect_uri: callback_url }.merge(token_params.to_hash(symbolize_keys: true)), deep_symbolize(options.auth_token_params))
-      #   # puts options
-      #   puts client.options
-      #   puts '========================='
-      #   token = client.auth_code.get_token(verifier, {
-      #     redirect_uri: callback_url,
-      #     client_id: options.client_id,
-      #     client_secret: options.client_secret
-      #   }.merge(token_params.to_hash(symbolize_keys: true)), deep_symbolize(options.auth_token_params))
-      #   puts 'build_access_token <<<<<<<<<<'
-      #   token
-      # end
+      def build_access_token
+        puts 'build_access_token >>>>>>>>>>'
+        verifier = request.params["code"]
+        puts verifier
+        # token = client.auth_code.get_token(verifier, { redirect_uri: callback_url }.merge(token_params.to_hash(symbolize_keys: true)), deep_symbolize(options.auth_token_params))
+        # puts options
+        puts client.options
+        puts '========================='
+        token = client.auth_code.get_token(verifier, {
+          redirect_uri: callback_url,
+          client_id: options.client_id,
+          # client_secret: options.client_secret
+        }.merge(token_params.to_hash(symbolize_keys: true)), deep_symbolize(options.auth_token_params))
+        puts "print token : #{token}"
+        puts 'build_access_token <<<<<<<<<<'
+        token
+      end
     end
   end
 end

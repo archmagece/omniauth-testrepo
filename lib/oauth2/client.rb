@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'faraday'
-require 'logger'
 
 if Faraday::Utils.respond_to?(:default_space_encoding)
   # This setting doesn't exist in faraday 0.x
@@ -44,6 +43,10 @@ module OAuth2
     # @option options [Class] :access_token_class [Class] class of access token for easier subclassing OAuth2::AccessToken, @version 2.0+
     # @yield [builder] The Faraday connection builder
     def initialize(client_id, client_secret, options = {}, &block)
+      puts 'oauth2.initialize >>>>>>>>>>'
+      puts 'oauth2.initialize client_id', client_id
+      puts 'oauth2.initialize client_secret', client_secret
+      puts 'oauth2.initialize options', options
       opts = options.dup
       @id = client_id
       @secret = client_secret
@@ -77,6 +80,9 @@ module OAuth2
     def connection
       @connection ||=
         Faraday.new(site, options[:connection_opts]) do |builder|
+          puts 'oauth2.client >>>>>>>>>>'
+          puts 'oauth2.client options', options
+          puts 'oauth2.client builder', builder
           oauth_debug_logging(builder)
           if options[:connection_build]
             options[:connection_build].call(builder)
@@ -119,6 +125,11 @@ module OAuth2
     # @option opts [true, false] :snaky (true) @see Response::initialize
     # @yield [req] @see Faraday::Connection#run_request
     def request(verb, url, opts = {}, &block)
+      puts 'request >>>>>>>>>>'
+      puts 'request verb', verb
+      puts 'request url', url
+      puts 'request opts', opts
+      puts 'request block', block
       response = execute_request(verb, url, opts, &block)
 
       case response.status
@@ -165,6 +176,11 @@ module OAuth2
     # @yield [req] @see Faraday::Connection#run_request
     # @return [AccessToken] the initialized AccessToken
     def get_token(params, access_token_opts = {}, extract_access_token = nil, &block)
+      puts 'get_token >>>>>>>>>>'
+      puts 'get_token params', params
+      puts 'get_token access_token_opts', access_token_opts
+      puts 'get_token extract_access_token', extract_access_token
+      # puts 'get_token block', block
       warn('OAuth2::Client#get_token argument `extract_access_token` will be removed in oauth2 v3. Refactor to use `access_token_class` on #initialize.') if extract_access_token
       extract_access_token ||= options[:extract_access_token]
       parse, snaky, params, headers = parse_snaky_params_headers(params)

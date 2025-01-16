@@ -63,12 +63,19 @@ class App < Sinatra::Base
     #          }
     provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil),
              scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile") do |builder|
+      builder.client_options.connection_build do |conn|
+        conn.request :url_encoded
+        conn.response :logger, $logger, { headers: true, bodies: { request: false, response: true }, errors: true }
+        conn.adapter Faraday.default_adapter
+      end
+      # connection_build
+
       # provider :kakao, "bcf75d0d9b0781ac4305d8750972ce25", "W7oQ3tX4Z9wj9gPJRqFlJ2waVVLTLfY8",
       #  scope: "profile,account_email" do |builder|
-      builder.request :url_encoded
-      # builder.response :logger, $logger, bodies: true
-      builder.response :logger, $logger, { headers: true, bodies: { request: false, response: true }, errors: true }
-      builder.adapter Faraday.default_adapter
+      # builder.request :url_encoded
+      # # builder.response :logger, $logger, bodies: true
+      # builder.response :logger, $logger, { headers: true, bodies: { request: false, response: true }, errors: true }
+      # builder.adapter Faraday.default_adapter
     end
     # before_request_phase do |env|
     #   puts "before_request_phase >>>>>>>>>>"
@@ -171,15 +178,77 @@ class App < Sinatra::Base
     HTML
   end
 
+  helpers do
+    def render_callback_page(auth, url)
+      <<-HTML
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>OmniAuth Callback - #{url}</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  margin: 0;
+                  padding: 0;
+                  background-color: #f9f9f9;
+                  color: #333;
+              }
+              header {
+                  background-color: #4CAF50;
+                  color: white;
+                  padding: 1rem;
+                  text-align: center;
+              }
+              .container {
+                  max-width: 800px;
+                  margin: 2rem auto;
+                  padding: 1rem;
+                  background: white;
+                  border-radius: 8px;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              }
+              h1 {
+                  font-size: 1.5rem;
+                  margin-bottom: 1rem;
+              }
+              pre {
+                  background: #f4f4f4;
+                  padding: 1rem;
+                  border-radius: 8px;
+                  overflow-x: auto;
+                  font-size: 0.9rem;
+              }
+          </style>
+      </head>
+      <body>
+          <header>
+              <h1>OmniAuth Callback - #{url}</h1>
+          </header>
+          <div class="container">
+              <h1>#{params[:provider].capitalize} Callback Success</h1>
+              <p>The callback from <strong>#{params[:provider].capitalize}</strong> was successful. Below is the data received:</p>
+              <pre>#{JSON.pretty_generate(auth)}</pre>
+          </div>
+      </body>
+      </html>
+      HTML
+    end
+  end
+
   post "/auth/:provider/callback" do
     logger.info "========================================================"
     logger.info "route POST /auth/:provider/callback"
-    content_type "text/plain"
+    # content_type "text/plain"
     begin
       logger.info "begin"
-      logger.info request.env["omniauth.auth"]
-      logger.info request.env["omniauth.auth"].to_hash
-      request.env["omniauth.auth"].to_hash.inspect
+      auth = request.env["omniauth.auth"]
+      logger.info auth
+      logger.info auth.to_hash
+      # request.env["omniauth.auth"].to_hash.inspect
+
+      render_callback_page(auth, request.url)
     rescue StandardError
       "No Data"
     end
@@ -188,12 +257,15 @@ class App < Sinatra::Base
   get "/auth/:provider/callback" do
     logger.info "========================================================"
     logger.info "route GET /auth/:provider/callback"
-    content_type "text/plain"
+    # content_type "text/plain"
     begin
       logger.info "begin"
-      logger.info request.env["omniauth.auth"]
-      logger.info request.env["omniauth.auth"].to_hash
-      request.env["omniauth.auth"].to_hash.inspect
+      auth = request.env["omniauth.auth"]
+      logger.info auth
+      logger.info auth.to_hash
+      # request.env["omniauth.auth"].to_hash.inspect
+
+      render_callback_page(auth, request.url)
     rescue StandardError
       "No Data"
     end

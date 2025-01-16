@@ -36,14 +36,14 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
-  spec.add_dependency "jwt", ">= 2.10"
+  spec.add_dependency "jwt", [">= 2.0", "< 3.0"]
   # spec.add_dependency "oauth2", "~> 2.0"
   spec.add_dependency "omniauth", "~> 2.1"
   # spec.add_dependency "omniauth-oauth2", "~> 1.8"
 
   # oauth2
   spec.add_dependency "faraday", [">= 0.17.3", "< 3.0"]
-  spec.add_dependency "jwt", [">= 1.0", "< 3.0"]
+  # spec.add_dependency "jwt", [">= 2.0", "< 3.0"]
   spec.add_dependency "multi_xml", "~> 0.5"
   spec.add_dependency "rack", [">= 1.2", "< 4"]
   spec.add_dependency "snaky_hash", "~> 2.0"
