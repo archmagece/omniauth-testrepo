@@ -1,19 +1,16 @@
 # frozen_string_literal: true
 
-# Sample app for Google OAuth2 Strategy
-# Make sure to setup the ENV variables GOOGLE_KEY and GOOGLE_SECRET
-# Run with "bundle exec rackup"
-
 require "rubygems"
 require "bundler"
 require "sinatra"
 require "omniauth"
 require "faraday"
 require "logger"
+require "byebug"
 
-# require "sb-omniauth-kakao"
+require "sb-omniauth-kakao"
 # require_relative "../lib/sb-omniauth-kakao.rb"
-require "./lib/sb-omniauth-kakao"
+# require "./lib/sb-omniauth-kakao"
 
 require "dotenv"
 Dotenv.load
@@ -29,6 +26,10 @@ class App < Sinatra::Base
   configure do
     set :sessions, true
     set :inline_templates, true
+
+    # STDOUT의 sync 활성화로 버퍼링 방지
+    STDOUT.sync = true
+
     # 로깅 설정
     $logger = Logger.new(STDOUT)
     $logger.level = Logger::DEBUG
@@ -36,40 +37,67 @@ class App < Sinatra::Base
     # Sinatra 로깅 활성화
     enable :logging
     set :logger, $logger
-
-    # enable :sessions
-    # set :session_secret, ENV.fetch("RACK_COOKIE_SECRET", "a3f5e6d7c8b9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5")
   end
 
   before do
-    env["rack.logger"] = settings.logger
+    env["rack.logger"] = $logger
   end
 
   use Rack::Session::Cookie, secret: ENV.fetch("RACK_COOKIE_SECRET", "a3f5e6d7c8b9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5")
 
+  # OAuth2 클라이언트의 로거를 Sinatra의 로거로 설정
+  OAuth2::Client.class_eval do
+    define_method(:logger) { $logger }
+  end
+  OmniAuth.config.logger = $logger
   use OmniAuth::Builder do
     # provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil), access_type: "offline", prompt: "consent", provider_ignores_state: true, scope: "account_email,profile", :strategy_class => OmniAuth::Strategies::KakaoOauth2
+    # provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil),
+    #          scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile"),
+    #          client_options: {
+    #            connection_build: lambda do |builder|
+    #              builder.request :url_encoded
+    #              builder.response :logger, $logger
+    #              builder.adapter Faraday.default_adapter
+    #            end
+    #          }
     provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil),
-             scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile"),
-             client_options: {
-               connection_build: lambda do |builder|
-                 builder.request :url_encoded
-                 builder.response :logger, $logger
-                 builder.adapter Faraday.default_adapter
-               end
-             }
-    before_callback_phase do |_env|
-      puts "before_callback_phase"
-      # puts env
+             scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile") do |builder|
+      # provider :kakao, "bcf75d0d9b0781ac4305d8750972ce25", "W7oQ3tX4Z9wj9gPJRqFlJ2waVVLTLfY8",
+      #  scope: "profile,account_email" do |builder|
+      builder.request :url_encoded
+      # builder.response :logger, $logger, bodies: true
+      builder.response :logger, $logger, { headers: true, bodies: { request: false, response: true }, errors: true }
+      builder.adapter Faraday.default_adapter
     end
+    # before_request_phase do |env|
+    #   puts "before_request_phase >>>>>>>>>>"
+    #   puts env["rack.session"]
+    #   puts env["rack.session"]["user_params"]
+    #   puts env["rack.request.form_hash"]["user"]
+    #   request_env = env['omniauth.auth']
+    #   print request_env
+    #   puts "before_request_phase <<<<<<<<<<"
+    # end
+    # before_callback_phase do |env|
+    #   puts "before_callback_phase >>>>>>>>>>"
+    #   request_env = env['omniauth.auth']
+    #   puts "=== OmniAuth Request ==="
+    #   puts request_env.to_hash if request_env
+    #
+    #   # puts env["rack.session"]
+    #   # puts env["rack.session"]["user_params"]
+    #   # puts env["rack.request.form_hash"]["user"]
+    #   puts "before_callback_phase <<<<<<<<<<"
+    # end
     puts "OmniAuth::Strategies::KakaoOauth2"
     puts "KAKAO_CLIENT_ID: #{ENV.fetch("KAKAO_CLIENT_ID", nil)}"
     puts "KAKAO_CLIENT_SECRET: #{ENV.fetch("KAKAO_CLIENT_SECRET", nil)}"
-  end
-  OmniAuth.config.on_failure = proc do |env|
-    error = env["omniauth.error"]
-    puts "OmniAuth error: #{error.inspect}"
-    OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+    # on_failure do |env|
+    #   error = env["omniauth.error"]
+    #   puts "OmniAuth error: #{error.inspect}"
+    #   OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+    # end
   end
 
   get "/" do

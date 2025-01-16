@@ -14,7 +14,7 @@ Dotenv.load
   site: "https://kauth.kakao.com"
 ) do |builder|
   builder.request :url_encoded
-  builder.response :logger, Logger.new(STDOUT) # 요청/응답 로깅
+  builder.response :logger, Logger.new(STDOUT),  { headers: true, bodies: { request: false, response: true }, errors: true }
   builder.adapter Faraday.default_adapter
 end
 # @client = OAuth2::Client.new(
