@@ -22,4 +22,6 @@ group :development, :test do
 
   gem "puma"
   gem "rackup"
+
+  gem "rerun"
 end
