@@ -5,29 +5,30 @@ require "omniauth-oauth2"
 module OmniAuth
   module Strategies
     class Kakao < OmniAuth::Strategies::OAuth2
-      ALLOWED_ISSUERS = %w[kauth.kakao.com https://kauth.kakao.com].freeze
+      # ALLOWED_ISSUERS = %w[kauth.kakao.com https://kauth.kakao.com].freeze
       # BASE_SCOPE_URL = 'https://kauth.kakao.com/oauth/authorize/'
       # BASE_SCOPES = %w[profile account_email openid].freeze
-      DEFAULT_SCOPE = "account_email,profile"
+      DEFAULT_SCOPE = "account_email,profile".freeze
       # IMAGE_SIZE_REGEXP = /(s\d+(-c)?)|(w\d+-h\d+(-c)?)|(w\d+(-c)?)|(h\d+(-c)?)|c/
       # AUTHORIZE_OPTIONS = %i[access_type hd login_hint prompt request_visible_actions scope state redirect_uri include_granted_scopes enable_granular_consent openid_realm device_id device_name]
 
-      BASE_URL = "https://kauth.kakao.com"
-      AUTHORIZE_URL = "/oauth/authorize"
-      AUTHORIZE_TOKEN_URL = "/oauth/token"
-      TOKEN_INFO_URL = "/oauth/tokeninfo"
+      BASE_URL = "https://kauth.kakao.com".freeze
+      AUTHORIZE_URL = "/oauth/authorize".freeze
+      AUTHORIZE_TOKEN_URL = "/oauth/token".freeze
+      TOKEN_INFO_URL = "/oauth/tokeninfo".freeze
 
-      OPENID_CONFIG_URL = "https://kauth.kakao.com/.well-known/openid-configuration"
+      OPENID_CONFIG_URL = "https://kauth.kakao.com/.well-known/openid-configuration".freeze
 
       # https://kapi.kakao.com/v2/user/me
       # USER_INFO_URL = 'v1/oidc/userinfo'
-      USER_INFO_URL = "https://kapi.kakao.com/v2/user/me"
+      USER_INFO_URL = "https://kapi.kakao.com/v2/user/me".freeze
       # USER_INFO_URL = "kapi.kakao.com/v2/user/me"
 
       option :client_options,
              site: BASE_URL,
              authorize_url: AUTHORIZE_URL,
              token_url: AUTHORIZE_TOKEN_URL
+
       uid { raw_info["id"].to_s }
 
       info do
@@ -46,9 +47,6 @@ module OmniAuth
         { raw_info: raw_info }
       end
 
-      def raw_info
-        @raw_info ||= access_token.get(USER_INFO_URL).parsed
-      end
 
       def callback_url
         options.redirect_url || (full_host + callback_path)
@@ -112,6 +110,12 @@ module OmniAuth
         puts "print token : #{token}"
         puts 'build_access_token <<<<<<<<<<'
         token
+      end
+
+      private
+
+      def raw_info
+        @raw_info ||= access_token.get(USER_INFO_URL).parsed
       end
     end
   end
