@@ -9,8 +9,6 @@ require "logger"
 require "byebug"
 
 require "sb-omniauth-kakao"
-# require_relative "../lib/sb-omniauth-kakao.rb"
-# require "./lib/sb-omniauth-kakao"
 
 require "dotenv"
 Dotenv.load
@@ -62,7 +60,7 @@ class App < Sinatra::Base
     #            end
     #          }
     provider :kakao, ENV.fetch("KAKAO_CLIENT_ID", nil), ENV.fetch("KAKAO_CLIENT_SECRET", nil),
-             scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile") do |builder|
+             scope: ENV.fetch("KAKAO_CLIENT_SCOPE", "profile"), redirect_url: ENV.fetch("KAKAO_REDIRECT_URL") do |builder|
       builder.client_options.connection_build do |conn|
         conn.request :url_encoded
         conn.response :logger, $logger, { headers: true, bodies: { request: false, response: true }, errors: true }

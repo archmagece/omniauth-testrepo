@@ -47,8 +47,12 @@ module OmniAuth
         { raw_info: raw_info }
       end
 
-
       def callback_url
+        # puts "auth_token_params >>>>>>>>>>"
+        # puts "redirect_url #{options.redirect_url}"
+        # puts "full_host #{full_host}"
+        # puts "callback_path #{callback_path}"
+        # puts "auth_token_params ----------" 
         options.redirect_url || (full_host + callback_path)
       end
 

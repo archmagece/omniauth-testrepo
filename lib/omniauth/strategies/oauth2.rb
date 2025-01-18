@@ -70,6 +70,10 @@ module OmniAuth
       end
 
       def request_phase
+        OmniAuth.logger.send :debug, "OAuth2::request_phase >>>>>>>>>>" 
+        OmniAuth.logger.send :debug, callback_url
+        OmniAuth.logger.send :debug, authorize_params
+        OmniAuth.logger.send :debug, "OAuth2::request_phase ----------" 
         redirect client.auth_code.authorize_url({ redirect_uri: callback_url }.merge(authorize_params))
       end
 
@@ -101,6 +105,9 @@ module OmniAuth
         OmniAuth.logger.send :debug, "OAuth2::callback_phase >>>>>>>>>>"
         error = request.params["error_reason"] || request.params["error"]
         OmniAuth.logger.send :debug, "OAuth2::callback_phase ----------"
+        OmniAuth.logger.send :debug, request.params
+        OmniAuth.logger.send :debug, session
+        OmniAuth.logger.send :debug, session["omniauth.state"]
         if !options.provider_ignores_state && (request.params["state"].to_s.empty? || !secure_compare(request.params["state"], session.delete("omniauth.state")))
           fail!(:csrf_detected, CallbackError.new(:csrf_detected, "CSRF detected"))
         elsif error
@@ -145,11 +152,12 @@ module OmniAuth
       def build_access_token
         OmniAuth.logger.send :debug, "OAuth2::build_access_token >>>>>>>>>>"
         verifier = request.params["code"]
-        OmniAuth.logger.send :debug, verifier
-        OmniAuth.logger.send :debug, options
-        # OmniAuth.logger.send :debug, options.auth_token_params
+        OmniAuth.logger.send :debug, "OAuth2::build_access_token #{verifier}"
+        OmniAuth.logger.send :debug, "OAuth2::build_access_token #{callback_url}"
+        OmniAuth.logger.send :debug, "OAuth2::build_access_token #{options}"
+        OmniAuth.logger.send :debug, options.auth_token_params
         token = client.auth_code.get_token(verifier, { redirect_uri: callback_url }.merge(token_params.to_hash(symbolize_keys: true)), deep_symbolize(options.auth_token_params))
-        OmniAuth.logger.send :debug, token
+        OmniAuth.logger.send :debug, "OAuth2::build_access_token #{token}"
         OmniAuth.logger.send :debug, "OAuth2::build_access_token <<<<<<<<<<"
         token
       end
@@ -178,12 +186,16 @@ module OmniAuth
 
       # constant-time comparison algorithm to prevent timing attacks
       def secure_compare(string_a, string_b)
+        OmniAuth.logger.send :debug, "OAuth2::secure_compare >>>>>>>>>>"
+        OmniAuth.logger.send :debug, string_a
+        OmniAuth.logger.send :debug, string_b
         return false unless string_a.bytesize == string_b.bytesize
 
         l = string_a.unpack "C#{string_a.bytesize}"
 
         res = 0
         string_b.each_byte { |byte| res |= byte ^ l.shift }
+        OmniAuth.logger.send :debug, "OAuth2::secure_compare <<<<<<<<<<"
         res.zero?
       end
 
